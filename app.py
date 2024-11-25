@@ -67,7 +67,8 @@ def get_blogs():
     if cache_blogs:
         return cache_blogs
     blogs = blogs_collection.find()
-    return [{"id": str(blog["_id"]), "title": blog["title"], "content": blog["content"]} for blog in blogs]
+    cache_blogs.extend([{"id": str(blog["_id"]), "title": blog["title"], "content": blog["content"]} for blog in blogs])
+    return cache_blogs
 
 @app.post("/post/blog")
 def post_blog(blog: Blog, token: str = Depends(oauth2_scheme)):
