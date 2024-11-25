@@ -7,6 +7,7 @@ import jwt
 import bcrypt
 import dotenv
 import os
+import pytz
 
 dotenv.load_dotenv()
 
@@ -37,7 +38,8 @@ class TokenData(BaseModel):
     token: str
 
 def create_jwt(username: str):
-    expire = datetime.utcnow() + timedelta(minutes=TOKEN_EXPIRE_MINUTES)
+    current_time = datetime.now(pytz.timezone('Asia/Kolkata'))
+    expire = current_time + timedelta(minutes=TOKEN_EXPIRE_MINUTES)
     payload = {"sub": username, "exp": expire}
     return jwt.encode(payload, JWT_SECRET, algorithm=JWT_ALGORITHM)
 
