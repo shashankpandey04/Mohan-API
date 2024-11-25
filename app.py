@@ -26,6 +26,8 @@ app = FastAPI()
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
 
+cache_blogs = []
+
 class User(BaseModel):
     username: str
     password: str
@@ -62,6 +64,8 @@ def login(user: User):
 
 @app.get("/get/blog")
 def get_blogs():
+    if cache_blogs:
+        return cache_blogs
     blogs = blogs_collection.find()
     return [{"id": str(blog["_id"]), "title": blog["title"], "content": blog["content"]} for blog in blogs]
 
@@ -70,6 +74,8 @@ def post_blog(blog: Blog, token: str = Depends(oauth2_scheme)):
     username = validate_jwt(token)
     new_blog = {"title": blog.title, "content": blog.content, "author": username}
     result = blogs_collection.insert_one(new_blog)
+    cache_blogs.clear()
+    cache_blogs.extend(get_blogs())
     return {"id": str(result.inserted_id), "message": "Blog saved successfully"}
 
 @app.post("/validate")
