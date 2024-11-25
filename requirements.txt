@@ -1,0 +1,6 @@
+fastapi 
+pymongo 
+pyjwt
+bcrypt
+uvicorn
+python-dotenv
