@@ -84,6 +84,14 @@ def validate_token(token_data: TokenData):
     username = validate_jwt(token_data.token)
     return {"username": username, "message": "Token is valid"}
 
+@app.post("/create/test_user")
+def create_test_user():
+    if users_collection.count_documents({}) == 0:
+        hashed_password = bcrypt.hashpw("admin".encode('utf-8'), bcrypt.gensalt())
+        users_collection.insert_one({"username": "admin", "password": hashed_password})
+        return {"message": "Test user created successfully"}
+    else:
+        return {"message": "Test user already exists"}
 
 if __name__ == "__main__":
     import uvicorn
